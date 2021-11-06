@@ -1,5 +1,10 @@
 package org.tyaa.java.tests.selenium.calvinklein.pages;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.tyaa.java.tests.selenium.calvinklein.decorator.customwebelements.NavMenuLink;
+import org.tyaa.java.tests.selenium.calvinklein.utils.Global;
 import org.tyaa.java.tests.selenium.calvinklein.utils.ValueWrapper;
 import org.tyaa.java.tests.selenium.calvinklein.utils.WebDriverFactory;
 import ru.yandex.qatools.ashot.AShot;
@@ -12,6 +17,9 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /* Фасад, скрывающий работу с окном браузера и с моделями веб-страниц от классов тестов */
 public class Facade {
@@ -35,6 +43,95 @@ public class Facade {
 
     public Facade agreeAndCloseCookieModal () throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         new BasePage(driverFactory.getDriver()).clickAgreeButton();
+        return this;
+    }
+
+    public Facade navigateThroughAllTheSectionsAndCheckNoErrors (
+        ValueWrapper<List<String>> errorStringsWrapper
+    ) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        WebDriver driver = driverFactory.getDriver();
+        List<NavMenuLink> navigationLinkElements =
+            new BasePage(driverFactory.getDriver()).getNavMenuLinks().collect(Collectors.toList());
+        final int navLinksCount = navigationLinkElements.size();
+        for (int i = 1; i <= navLinksCount; i++) {
+            WebElement navMenuLinkItem =
+                driver.findElement(
+                    By.cssSelector(
+                        String.format(".mega-menu__first-level > li:nth-child(%d)", i)
+                    )
+                );
+            NavMenuLink navMenuLink = new NavMenuLink(
+                driver,
+                navMenuLinkItem.findElement(By.cssSelector("a"))
+            );
+            navMenuLink.safeClickThenWaitForDocument(Global.properties.getImplicitlyWaitSeconds());
+            BasePage currentSectionPage = new BasePage(driverFactory.getDriver());
+            currentSectionPage.clickCloseModalButton();
+            if(!currentSectionPage.checkNoError()){
+                errorStringsWrapper.value.add(
+                    String.format(
+                        "Error. Link: '%s'; Url: '%s'\n",
+                        navMenuLink.getAttribute("href"),
+                        driverFactory.getDriver().getCurrentUrl()
+                    )
+                );
+            }
+        }
+        /* new BasePage(driverFactory.getDriver()).getNavMenuLinks()
+            .forEach(navMenuLink -> {
+                System.out.printf(".mega-menu__first-level > li > a[href=%s]", navMenuLink.getHref());
+                navMenuLink =
+                    new NavMenuLink(
+                        driver,
+                        driver.findElement(
+                                By.cssSelector(
+                                    String.format(
+                                        ".mega-menu__first-level > li > a[href=%s]",
+                                        navMenuLink.getHref()
+                                    )
+                                )
+                        )
+                    );
+                navMenuLink.safeClickThenWaitForDocument(Global.properties.getImplicitlyWaitSeconds());
+                navMenuLink =
+                    new NavMenuLink(
+                        driver,
+                        driver.findElement(
+                            By.cssSelector(
+                                String.format(
+                                    ".mega-menu__first-level > li > a[href=%s]",
+                                    navMenuLink.getHref()
+                                )
+                            )
+                        )
+                    );
+                try {
+                    BasePage currentSectionPage = new BasePage(driverFactory.getDriver());
+                    currentSectionPage.clickCloseModalButton();
+                    if(!currentSectionPage.checkNoError()){
+                        errorStringsWrapper.value.add(
+                            String.format(
+                                "Error. Link: '%s'; Url: '%s'\n",
+                                navMenuLink.getAttribute("href"),
+                                driverFactory.getDriver().getCurrentUrl()
+                            )
+                        );
+                    }
+                } catch (Exception ex) {
+                    try {
+                        errorStringsWrapper.value.add(
+                            String.format(
+                                "Exception '%s'; Link: '%s'; Url: '%s'\n",
+                                ex.getMessage(),
+                                navMenuLink.getAttribute("href"),
+                                driverFactory.getDriver().getCurrentUrl()
+                            )
+                        );
+                    } catch (Exception ex2) {
+                        ex2.printStackTrace();
+                    }
+                }
+            }); */
         return this;
     }
 
