@@ -1,6 +1,7 @@
 package org.tyaa.java.tests.selenium.calvinklein.pages;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -12,6 +13,8 @@ import org.tyaa.java.tests.selenium.calvinklein.decorator.customwebelements.NavM
 import org.tyaa.java.tests.selenium.calvinklein.utils.Global;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Thread.sleep;
@@ -44,6 +47,8 @@ public class BasePage {
                 .equals("complete")
         );
         PageFactory.initElements(new CustomWebElementFieldDecorator(driver), this);
+        Actions actions = new Actions(driver);
+        actions.moveToElement(header).perform();
     }
 
     public BasePage clickAgreeButton() {
@@ -115,5 +120,40 @@ public class BasePage {
         if (header != null)
             ((JavascriptExecutor) driver)
                 .executeScript("arguments[0].style.position='initial'", header);
+    }
+
+    /* public boolean checkByText (String text){
+        WebElement element = driver.findElement(
+            By.xpath(
+                String.format("//*[text='%s']", text)
+            )
+        );
+        return element != null;
+    } */
+
+    /* public WebElement getElementBySelector (String xpathSelector){
+        WebElement element = driver.findElement(
+            By.xpath(xpathSelector)
+        );
+        return element;
+    } */
+
+    /* public WebElement checkBySelectorAndHref (String xpathSelector, String href){
+        WebElement element = driver.findElement(
+            By.xpath(xpathSelector)
+        );
+        return (element != null && element.getAttribute("href").equals(href)) ? element : null;
+    } */
+
+    public List<String> getAllTexts () {
+        return driver.findElements(By.xpath("//*[./text()]")).stream()
+            .map(WebElement::getText)
+            .collect(Collectors.toList());
+    }
+
+    public List<String> getAllUrls () {
+        return driver.findElements(By.xpath("//a")).stream()
+            .map(element -> element.getAttribute("href"))
+            .collect(Collectors.toList());
     }
 }

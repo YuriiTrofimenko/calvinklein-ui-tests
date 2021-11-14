@@ -5,9 +5,14 @@
             <class name = "org.tyaa.java.tests.selenium.calvinklein.tests.GeneralSITsTest"/>
         </classes>
     </test>
-    <test name = "regression">
+    <test name = "regression" enabled="false">
         <classes>
             <class name = "org.tyaa.java.tests.selenium.calvinklein.tests.RegressionSplashScreenshotTest"/>
+        </classes>
+    </test>
+    <test name = "regression_content">
+        <classes>
+            <class name = "org.tyaa.java.tests.selenium.calvinklein.tests.RegressionContentTest"/>
         </classes>
     </test>
 </suite>
