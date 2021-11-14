@@ -28,6 +28,10 @@ public class BasePage {
     private final By H1_LOCATOR = By.cssSelector("h1");
     private final By ERROR_BLOCK_LOCATOR = By.cssSelector(".genericErrorSpot");
 
+    private final int MAX_ATTEMPT_COUNT = 3;
+
+    private int attemptCount = 0;
+
     public BasePage(WebDriver driver) {
         this.driver = driver;
         WebDriverWait wait = new WebDriverWait(driver, 15);
@@ -57,18 +61,26 @@ public class BasePage {
         return new BasePage(driver);
     }
 
-    public BasePage clickCloseModalButton() {
+    public BasePage clickCloseModalButton() throws InterruptedException {
         try {
             Button modalCloseButton =
                 new Button(
                     driver,
-                    driver.findElement(By.cssSelector("ck-Button__no-style ck-modal__close-btn"))
+                    driver.findElement(By.cssSelector(".ck-Button__no-style.ck-modal__close-btn"))
                 );
             modalCloseButton.safeClickThenWaitForDisappear(
                 By.cssSelector("ck-Button__no-style ck-modal__close-btn"),
                 Global.properties.getImplicitlyWaitSeconds()
             );
-        } catch (NoSuchElementException ignored) {}
+        } catch (NoSuchElementException ignored) {
+            if (attemptCount < MAX_ATTEMPT_COUNT) {
+                sleep(1000);
+                attemptCount++;
+                clickCloseModalButton();
+            } else {
+                attemptCount = 0;
+            }
+        }
         return new BasePage(driver);
     }
 
