@@ -90,6 +90,8 @@ public class Facade {
         String pathToSave,
         ValueWrapper<Screenshot> screenshotWrapper
     ) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
+        BasePage page = new BasePage(driverFactory.getDriver());
+        page.fixHeader();
         screenshotWrapper.value =
             new AShot().shootingStrategy(ShootingStrategies.viewportPasting(100))
             .takeScreenshot(driverFactory.getDriver());

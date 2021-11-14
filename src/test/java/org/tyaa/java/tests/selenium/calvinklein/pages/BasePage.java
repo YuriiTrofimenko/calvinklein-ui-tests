@@ -21,6 +21,9 @@ public class BasePage {
 
     protected WebDriver driver;
 
+    @FindBy(className = "header")
+    private WebElement header;
+
     @FindBy(className = "mega-menu__first-level")
     private NavMenu navMenu;
 
@@ -106,5 +109,11 @@ public class BasePage {
             isBadGateway = h1.getText().equals("502 Bad Gateway");
         }
         return !isInternalServerError && !isBadGateway && errorBlock == null;
+    }
+
+    public void fixHeader() {
+        if (header != null)
+            ((JavascriptExecutor) driver)
+                .executeScript("arguments[0].style.position='initial'", header);
     }
 }

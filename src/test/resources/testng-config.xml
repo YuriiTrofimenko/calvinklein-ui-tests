@@ -1,11 +1,11 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name = "MainSuite" thread-count="5" data-provider-thread-count="5">
-    <test name = "main">
+    <test name = "main" enabled="false">
         <classes>
             <class name = "org.tyaa.java.tests.selenium.calvinklein.tests.GeneralSITsTest"/>
         </classes>
     </test>
-    <test name = "regression" enabled="false">
+    <test name = "regression">
         <classes>
             <class name = "org.tyaa.java.tests.selenium.calvinklein.tests.RegressionSplashScreenshotTest"/>
         </classes>

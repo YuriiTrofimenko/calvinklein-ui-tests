@@ -9,4 +9,6 @@ public interface IPropertiesStore {
     Integer getImplicitlyWaitSeconds();
     String getProdUrl();
     String getLiveUrl();
+    String getProdUrl2();
+    String getLiveUrl2();
 }

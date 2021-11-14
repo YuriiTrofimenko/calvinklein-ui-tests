@@ -78,4 +78,14 @@ public class FilePropertiesStore implements IPropertiesStore {
     public String getLiveUrl() {
         return properties.getProperty("live");
     }
+
+    @Override
+    public String getProdUrl2() {
+        return properties.getProperty("prod2");
+    }
+
+    @Override
+    public String getLiveUrl2() {
+        return properties.getProperty("live2");
+    }
 }
