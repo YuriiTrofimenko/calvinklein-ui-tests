@@ -46,16 +46,23 @@ public class RegressionContentTest {
         ValueWrapper<Boolean> testFiled = new ValueWrapper<>();
         testFiled.value = false;
         results.forEach(result -> {
-            if (!result.text1.equals(result.text2)) {
+            /* System.out.printf(
+                "%s -> %s (url = %s)\n",
+                result.text1,
+                result.text2,
+                result.url
+            ); */
+            if (result.text1 != null && !result.text1.equals(result.text2)) {
                 testFiled.value = true;
-                System.out.printf(
+                /* System.out.printf(
                     "No equality: %s != %s (url = %s)\n",
                     result.text1,
                     result.text2,
                     result.url
-                );
+                ); */
             }
         });
+        System.out.println("*********");
         if (testFiled.value) {
             fail();
         }

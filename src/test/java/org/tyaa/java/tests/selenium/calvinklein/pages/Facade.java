@@ -1,9 +1,6 @@
 package org.tyaa.java.tests.selenium.calvinklein.pages;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.tyaa.java.tests.selenium.calvinklein.decorator.customwebelements.NavMenuLink;
 import org.tyaa.java.tests.selenium.calvinklein.utils.*;
 import ru.yandex.qatools.ashot.AShot;
@@ -190,6 +187,7 @@ public class Facade {
             BasePage page = new BasePage(driverFactory.getDriver());
             texts.addAll(page.getAllTexts());
         } catch (Exception ex) {
+            ex.printStackTrace();
             this.close();
             throw ex;
         }
@@ -218,40 +216,41 @@ public class Facade {
         List<String> texts1 = new ArrayList<>();
         WebDriver driver = driverFactory.getDriver();
         try {
-            BasePage startBasePage = new BasePage(driverFactory.getDriver());
-            List<NavMenuLink> navigationLinkElements =
-                startBasePage.getNavMenuLinks().collect(Collectors.toList());
-            final int navLinksCount = navigationLinkElements.size();
-            startBasePage.clickCloseModalButton();
-            for (int i = 1; i < navLinksCount; i++) {
-                WebElement navMenuLinkItem =
-                    driver.findElement(
-                        By.cssSelector(
-                            String.format(".mega-menu__first-level > li:nth-child(%d)", i)
-                        )
-                    );
-                NavMenuLink navMenuLink = new NavMenuLink(
-                    driver,
-                    navMenuLinkItem.findElement(By.cssSelector("a"))
+        BasePage startBasePage = new BasePage(driverFactory.getDriver());
+        List<NavMenuLink> navigationLinkElements =
+            startBasePage.getNavMenuLinks().collect(Collectors.toList());
+        /*final */
+        int navLinksCount = navigationLinkElements.size();
+        for (int i = 1; i <= navLinksCount; i++) {
+            WebElement navMenuLinkItem =
+                driver.findElement(
+                    By.cssSelector(
+                        String.format(".mega-menu__first-level > li:nth-child(%d)", i)
+                    )
                 );
+            NavMenuLink navMenuLink = new NavMenuLink(
+                driver,
+                navMenuLinkItem.findElement(By.cssSelector("a"))
+            );
+            try {
                 navMenuLink.safeClickThenWaitForDocument(Global.properties.getImplicitlyWaitSeconds());
-
-                ((JavascriptExecutor) driver)
-                    .executeScript("window.scrollTo(0, document.body.scrollHeight)");
-                Thread.sleep(Global.properties.getImplicitlyWaitSeconds() * 1000);
-
-                getAllTexts(texts1);
-                getAllUrls(texts1);
-
-                texts1.forEach(s -> {
-                    results.add(new ContentComparisonResult(s, null, driver.getCurrentUrl()));
-                });
+            } catch (ElementClickInterceptedException ex) {
+                startBasePage.clickCloseModalButton();
+                navMenuLink.safeClickThenWaitForDocument(Global.properties.getImplicitlyWaitSeconds());
             }
-        } catch (Exception ex) {
+            ((JavascriptExecutor) driver)
+                .executeScript("window.scrollTo(0, document.body.scrollHeight)");
+            Thread.sleep(Global.properties.getImplicitlyWaitSeconds() * 1000);
+            getAllTexts(texts1);
+            getAllUrls(texts1);
+
+            texts1.forEach(s -> {
+                results.add(new ContentComparisonResult(s, null, driver.getCurrentUrl()));
+            });
+        }
+    } catch (Exception ex) {
             System.err.println(ex.getMessage());
             ex.printStackTrace();
-        } finally {
-            this.close();
         }
 
         // сбор всех строк текста и гиперссылок со второй версии всех страниц
@@ -266,7 +265,8 @@ public class Facade {
                 startBasePage.getNavMenuLinks().collect(Collectors.toList());
             final int navLinksCount = navigationLinkElements.size();
             startBasePage.clickCloseModalButton();
-            for (int i = 1; i < navLinksCount; i++) {
+            for (int i = 1; i <= navLinksCount; i++) {
+                System.out.println("i = " + i);
                 WebElement navMenuLinkItem =
                     driver.findElement(
                         By.cssSelector(
@@ -277,7 +277,12 @@ public class Facade {
                     driver,
                     navMenuLinkItem.findElement(By.cssSelector("a"))
                 );
-                navMenuLink.safeClickThenWaitForDocument(Global.properties.getImplicitlyWaitSeconds());
+                try {
+                    navMenuLink.safeClickThenWaitForDocument(Global.properties.getImplicitlyWaitSeconds());
+                } catch (ElementClickInterceptedException ex) {
+                    startBasePage.clickCloseModalButton();
+                    navMenuLink.safeClickThenWaitForDocument(Global.properties.getImplicitlyWaitSeconds());
+                }
 
                 ((JavascriptExecutor) driver)
                     .executeScript("window.scrollTo(0, document.body.scrollHeight)");
@@ -287,7 +292,11 @@ public class Facade {
                 getAllUrls(texts2);
 
                 for (int j = 0; j < results.size(); j++) {
-                    results.get(j).text2 = texts2.get(j);
+                    try {
+                        System.out.printf("%s -> %s\n", results.get(j).text1, texts2.get(j));
+                        results.get(j).text2 = texts2.get(j);
+                    } catch (IndexOutOfBoundsException ignored) {}
+
                 }
             }
         } catch (Exception ex) {

@@ -12,7 +12,8 @@ public class NavMenu extends BaseElement {
         super(driver, element);
     }
     public Stream<NavMenuLink> getLinks() {
-        return this.element.findElements(By.xpath("/li/a")).stream()
+        // return this.element.findElements(By.xpath("/li/a")).stream()
+        return driver.findElements(By.cssSelector(".mega-menu__first-level > li > a")).stream()
             .map(el -> new NavMenuLink(driver, el));
     }
 }

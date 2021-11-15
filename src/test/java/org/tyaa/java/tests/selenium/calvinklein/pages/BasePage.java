@@ -81,13 +81,13 @@ public class BasePage {
                 Global.properties.getImplicitlyWaitSeconds()
             );
         } catch (NoSuchElementException ignored) {
-            if (attemptCount < MAX_ATTEMPT_COUNT) {
+            /* if (attemptCount < MAX_ATTEMPT_COUNT) {
                 sleep(1000);
                 attemptCount++;
                 clickCloseModalButton();
             } else {
                 attemptCount = 0;
-            }
+            } */
         }
         return new BasePage(driver);
     }
@@ -146,14 +146,16 @@ public class BasePage {
     } */
 
     public List<String> getAllTexts () {
-        return driver.findElements(By.xpath("//*[./text()]")).stream()
+        return driver.findElements(By.xpath("//*[text()]")).stream()
             .map(WebElement::getText)
+            .filter(s -> s != null && !s.isBlank())
             .collect(Collectors.toList());
     }
 
     public List<String> getAllUrls () {
         return driver.findElements(By.xpath("//a")).stream()
             .map(element -> element.getAttribute("href"))
+            .filter(s -> s != null && !s.isBlank())
             .collect(Collectors.toList());
     }
 }
