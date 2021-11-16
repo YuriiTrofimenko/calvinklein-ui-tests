@@ -11,11 +11,12 @@ public class FilePropertiesStore implements IPropertiesStore {
 
     private static final String PROPS_CATALOG = "src/test/resources/";
     private static final Set<String> PROPS_FILE_NAMES =
-        Set.of("supported-browsers", "main-config", "base-urls");
+        Set.of("supported-browsers", "main-config", "base-urls", "skip-list");
     private static final Properties properties = new Properties();
 
     private static Map<String, String> supportedBrowsers;
-    private static Map<String, String> domains;
+    // private static Map<String, String> domains;
+    private static Map<String, List<Integer>> skipLists;
 
     static {
         PROPS_FILE_NAMES.forEach(propsFileName -> {
@@ -87,5 +88,27 @@ public class FilePropertiesStore implements IPropertiesStore {
     @Override
     public String getLiveUrl2() {
         return properties.getProperty("live2");
+    }
+
+    @Override
+    public List<Integer> getSkipList(String url) {
+        if (skipLists == null) {
+            skipLists = properties.entrySet().stream()
+                .filter(entry -> entry.getKey().toString().startsWith("https"))
+                .collect(Collectors.toMap(
+                    entry -> entry.getKey().toString(),
+                    entry -> {
+                        String[] indexStrings = entry.getValue().toString().split(",");
+                        List<Integer> indexIntegers = new ArrayList<>();
+                        for (String indexString : indexStrings) {
+                            indexIntegers.add(Integer.parseInt(indexString));
+                        }
+                        return indexIntegers;
+                    },
+                    (o, o2) -> o,
+                    LinkedHashMap::new
+                ));
+        }
+        return skipLists.get(url);
     }
 }

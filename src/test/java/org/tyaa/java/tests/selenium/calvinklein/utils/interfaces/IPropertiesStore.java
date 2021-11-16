@@ -1,5 +1,6 @@
 package org.tyaa.java.tests.selenium.calvinklein.utils.interfaces;
 
+import java.util.List;
 import java.util.Map;
 
 public interface IPropertiesStore {
@@ -11,4 +12,5 @@ public interface IPropertiesStore {
     String getLiveUrl();
     String getProdUrl2();
     String getLiveUrl2();
+    List<Integer> getSkipList(String url);
 }

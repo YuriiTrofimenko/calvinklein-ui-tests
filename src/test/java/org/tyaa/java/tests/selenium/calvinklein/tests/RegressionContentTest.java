@@ -43,8 +43,10 @@ public class RegressionContentTest {
                 currentLiveUrl,
                 results
             ).close();
-        ValueWrapper<Boolean> testFiled = new ValueWrapper<>();
-        testFiled.value = false;
+        ValueWrapper<Boolean> testFailed = new ValueWrapper<>();
+        ValueWrapper<Integer> resultIndex = new ValueWrapper<>();
+        testFailed.value = false;
+        resultIndex.value = 0;
         results.forEach(result -> {
             /* System.out.printf(
                 "%s -> %s (url = %s)\n",
@@ -52,18 +54,23 @@ public class RegressionContentTest {
                 result.text2,
                 result.url
             ); */
-            if (result.text1 != null && !result.text1.equals(result.text2)) {
-                testFiled.value = true;
+            if (result.text1 != null
+                && !result.text1.equals(result.text2)
+                && !Global.properties.getSkipList(result.url).contains(resultIndex.value)
+            ) {
+                testFailed.value = true;
                 System.out.printf(
-                    "No equality: %s != %s (url = %s)\n",
+                    "No equality: %s != %s (index = %s, url = %s)\n",
                     result.text1,
                     result.text2,
+                    resultIndex.value,
                     result.url
                 );
             }
+            resultIndex.value++;
         });
         System.out.println("*********");
-        if (testFiled.value) {
+        if (testFailed.value) {
             fail();
         }
     }

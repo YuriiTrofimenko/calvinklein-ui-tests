@@ -149,7 +149,6 @@ public class BasePage {
         return driver.findElements(By.xpath("//*[text()]")).stream()
             .map(WebElement::getText)
             .filter(s -> s != null && !s.isBlank())
-            .map(s -> )
             .collect(Collectors.toList());
     }
 
