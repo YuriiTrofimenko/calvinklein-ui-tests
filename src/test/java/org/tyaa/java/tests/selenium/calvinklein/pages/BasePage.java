@@ -146,14 +146,14 @@ public class BasePage {
     } */
 
     public List<String> getAllTexts () {
-        return driver.findElements(By.xpath("//*[text()]")).stream()
+        return driver.findElements(By.xpath("//main[contains(@class,'main-layout')]//*[text()]")).stream()
             .map(WebElement::getText)
             .filter(s -> s != null && !s.isBlank())
             .collect(Collectors.toList());
     }
 
     public List<String> getAllUrls () {
-        return driver.findElements(By.xpath("//a")).stream()
+        return driver.findElements(By.xpath("//main[contains(@class,'main-layout')]//a")).stream()
             .map(element -> element.getAttribute("href"))
             .filter(s -> s != null && !s.isBlank())
             .collect(Collectors.toList());

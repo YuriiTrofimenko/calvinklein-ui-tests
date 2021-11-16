@@ -11,12 +11,13 @@ public class FilePropertiesStore implements IPropertiesStore {
 
     private static final String PROPS_CATALOG = "src/test/resources/";
     private static final Set<String> PROPS_FILE_NAMES =
-        Set.of("supported-browsers", "main-config", "base-urls", "skip-list");
+        Set.of("supported-browsers", "main-config", "base-urls", "skip-list", "navlink-skip-list");
     private static final Properties properties = new Properties();
 
     private static Map<String, String> supportedBrowsers;
     // private static Map<String, String> domains;
     private static Map<String, List<Integer>> skipLists;
+    private static List<Integer> navLinkSkipList;
 
     static {
         PROPS_FILE_NAMES.forEach(propsFileName -> {
@@ -109,6 +110,24 @@ public class FilePropertiesStore implements IPropertiesStore {
                     LinkedHashMap::new
                 ));
         }
-        return skipLists.get(url);
+        return skipLists.get(url) != null ? skipLists.get(url) : new ArrayList<>();
+    }
+
+    @Override
+    public List<Integer> getNavLinkSkipList() {
+        if (navLinkSkipList == null) {
+            Map.Entry<Object, Object> navLikSkipEntry = properties.entrySet().stream()
+                .filter(entry -> entry.getKey().equals("navlik-skip"))
+                .findFirst().get();
+            if (navLikSkipEntry.getValue() != null && !((String)navLikSkipEntry.getValue()).isBlank()) {
+                navLinkSkipList =
+                    Arrays.stream(((String)navLikSkipEntry.getValue()).split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+            } else {
+                navLinkSkipList = new ArrayList<>();
+            }
+        }
+        return navLinkSkipList;
     }
 }

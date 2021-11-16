@@ -13,4 +13,5 @@ public interface IPropertiesStore {
     String getProdUrl2();
     String getLiveUrl2();
     List<Integer> getSkipList(String url);
+    List<Integer> getNavLinkSkipList();
 }
