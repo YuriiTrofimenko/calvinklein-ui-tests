@@ -219,9 +219,9 @@ public class Facade {
         BasePage startBasePage = new BasePage(driverFactory.getDriver());
         List<NavMenuLink> navigationLinkElements =
             startBasePage.getNavMenuLinks().collect(Collectors.toList());
-        /*final */
-        int navLinksCount = navigationLinkElements.size();
+        final int navLinksCount = navigationLinkElements.size();
         for (int i = 1; i <= navLinksCount; i++) {
+            System.out.println("loop 1 = " + i);
             WebElement navMenuLinkItem =
                 driver.findElement(
                     By.cssSelector(
@@ -244,14 +244,16 @@ public class Facade {
             getAllTexts(texts1);
             getAllUrls(texts1);
 
-            texts1.forEach(s -> {
-                results.add(new ContentComparisonResult(s, null, driver.getCurrentUrl()));
-            });
+            System.out.println("texts1 count = " + texts1.size());
         }
     } catch (Exception ex) {
             System.err.println(ex.getMessage());
             ex.printStackTrace();
         }
+
+        texts1.forEach(s -> {
+            results.add(new ContentComparisonResult(s, null, driver.getCurrentUrl()));
+        });
 
         // сбор всех строк текста и гиперссылок со второй версии всех страниц
         // для сравнения
@@ -266,7 +268,7 @@ public class Facade {
             final int navLinksCount = navigationLinkElements.size();
             startBasePage.clickCloseModalButton();
             for (int i = 1; i <= navLinksCount; i++) {
-                System.out.println("i = " + i);
+                System.out.println("loop 2 = " + i);
                 WebElement navMenuLinkItem =
                     driver.findElement(
                         By.cssSelector(
@@ -291,18 +293,21 @@ public class Facade {
                 getAllTexts(texts2);
                 getAllUrls(texts2);
 
-                for (int j = 0; j < results.size(); j++) {
-                    try {
-                        System.out.printf("%s -> %s\n", results.get(j).text1, texts2.get(j));
-                        results.get(j).text2 = texts2.get(j);
-                    } catch (IndexOutOfBoundsException ignored) {}
-
-                }
+                System.out.println("texts2 count = " + texts2.size());
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
             this.close();
+        }
+
+        System.out.println("results count = " + results.size());
+
+        for (int j = 0; j < results.size(); j++) {
+            try {
+                // System.out.printf("%s -> %s\n", results.get(j).text1, texts2.get(j));
+                results.get(j).text2 = texts2.get(j);
+            } catch (IndexOutOfBoundsException ignored) {}
         }
 
         return this;
