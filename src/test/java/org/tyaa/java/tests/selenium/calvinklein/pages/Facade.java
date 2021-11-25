@@ -249,7 +249,7 @@ public class Facade {
             getAllTexts(texts1);
             getAllUrls(texts1);
             texts1.forEach(s -> {
-                results.add(new ContentComparisonResult(s, null, driver.getCurrentUrl()));
+                results.add(new ContentComparisonResult(s.replace(baseUrl1, "").replace(baseUrl2, ""), null, driver.getCurrentUrl()));
             });
             System.out.println("texts1 count = " + texts1.size());
         }
@@ -310,7 +310,7 @@ public class Facade {
         for (int j = 0; j < results.size(); j++) {
             try {
                 // System.out.printf("%s -> %s\n", results.get(j).text1, texts2.get(j));
-                results.get(j).text2 = texts2.get(j);
+                results.get(j).text2 = texts2.get(j).replace(baseUrl1, "").replace(baseUrl2, "");
             } catch (IndexOutOfBoundsException ignored) {}
         }
 
