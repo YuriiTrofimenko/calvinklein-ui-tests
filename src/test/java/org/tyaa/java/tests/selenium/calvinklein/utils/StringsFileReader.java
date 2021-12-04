@@ -21,6 +21,6 @@ public class StringsFileReader {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        return urls;
+        return urls != null ? urls.filter(s -> !s.startsWith("//")) : null;
     }
 }

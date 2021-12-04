@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.testng.Assert.assertEquals;
@@ -43,10 +44,29 @@ public class GeneralSITsTest {
         }
     }
 
-    @DataProvider(parallel = true)
+    @Test(dataProvider = "urls")
+    public void givenSideBarPages_whenOpen_thenSidebarPresents(String currentUrl) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
+        System.out.println("URLs:");
+        System.out.println(currentUrl);
+        /* ValueWrapper<List<String>> errorStringsWrapper = new ValueWrapper<>();
+        errorStringsWrapper.value = new ArrayList<>();
+        domManipulatorFacade.open(currentUrl)
+            .agreeAndCloseCookieModal()
+            .navigateThroughAllTheSectionsAndCheckNoErrors(errorStringsWrapper)
+            .close();
+        if (errorStringsWrapper.value.size() > 0) {
+            System.err.println("*** Navigation errors ***");
+            errorStringsWrapper.value.forEach(System.err::println);
+            System.err.println("******");
+            fail();
+        } */
+    }
+
+    @DataProvider(parallel = false)
     public Object[][] urls() {
         List<String> urls =
-            StringsFileReader.read("src/test/resources/urls.txt").collect(Collectors.toList());
+            Objects.requireNonNull(StringsFileReader.read("src/test/resources/urls.txt"))
+                .collect(Collectors.toList());
         final int rowAmount = urls.size();
         final int columnAmount = 1;
         Object[][] urlsArray = new Object[rowAmount][columnAmount];
