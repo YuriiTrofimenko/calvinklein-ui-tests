@@ -45,21 +45,28 @@ public class GeneralSITsTest {
     }
 
     @Test(dataProvider = "urls")
-    public void givenSideBarPages_whenOpen_thenSidebarPresents(String currentUrl) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
-        System.out.println("URLs:");
-        System.out.println(currentUrl);
-        /* ValueWrapper<List<String>> errorStringsWrapper = new ValueWrapper<>();
+    public void givenFaqSideBarPages_whenOpen_thenSidebarPresents(String currentUrl) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
+        checkSidebarPages(currentUrl, 3);
+    }
+
+    @Test(dataProvider = "urls")
+    public void givenAboutSideBarPages_whenOpen_thenSidebarPresents(String currentUrl) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
+        checkSidebarPages(currentUrl, 4);
+    }
+
+    private void checkSidebarPages (String currentUrl, Integer footerGroupNumber) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        ValueWrapper<List<String>> errorStringsWrapper = new ValueWrapper<>();
         errorStringsWrapper.value = new ArrayList<>();
         domManipulatorFacade.open(currentUrl)
             .agreeAndCloseCookieModal()
-            .navigateThroughAllTheSectionsAndCheckNoErrors(errorStringsWrapper)
+            .navigateThroughAllTheSidebarPagesAndCheckNoErrors(errorStringsWrapper, footerGroupNumber)
             .close();
         if (errorStringsWrapper.value.size() > 0) {
-            System.err.println("*** Navigation errors ***");
+            System.err.println("*** Errors ***");
             errorStringsWrapper.value.forEach(System.err::println);
             System.err.println("******");
             fail();
-        } */
+        }
     }
 
     @DataProvider(parallel = false)

@@ -1,6 +1,7 @@
 package org.tyaa.java.tests.selenium.calvinklein.pages;
 
 import org.openqa.selenium.*;
+import org.tyaa.java.tests.selenium.calvinklein.decorator.customwebelements.FooterNavMenu;
 import org.tyaa.java.tests.selenium.calvinklein.decorator.customwebelements.NavMenuLink;
 import org.tyaa.java.tests.selenium.calvinklein.utils.*;
 import ru.yandex.qatools.ashot.AShot;
@@ -51,7 +52,7 @@ public class Facade {
             List<NavMenuLink> navigationLinkElements =
                 startBasePage.getNavMenuLinks().collect(Collectors.toList());
             final int navLinksCount = navigationLinkElements.size();
-            startBasePage.clickCloseModalButton();
+            // startBasePage.clickCloseModalButton();
             if(!startBasePage.checkNoError()){
                 errorStringsWrapper.value.add(
                     String.format(
@@ -73,7 +74,9 @@ public class Facade {
                 );
                 navMenuLink.safeClickThenWaitForDocument(Global.properties.getImplicitlyWaitSeconds());
                 BasePage currentSectionPage = new BasePage(driverFactory.getDriver());
-                // currentSectionPage.clickCloseModalButton();
+                if (i == 1) {
+                    currentSectionPage.clickCloseModalButton();
+                }
                 if(!currentSectionPage.checkNoError()){
                     errorStringsWrapper.value.add(
                         String.format(
@@ -316,6 +319,141 @@ public class Facade {
 
         System.out.println("results count = " + results.size());
 
+        return this;
+    }
+
+    /* public Facade navigateThroughAllTheSidebarPagesAndCheckNoErrors(ValueWrapper<List<String>> errorStringsWrapper) {
+        try {
+            WebDriver driver = driverFactory.getDriver();
+            BasePage startBasePage = new BasePage(driver);
+            if(!startBasePage.checkNoError()){
+                errorStringsWrapper.value.add(
+                    String.format(
+                        "Error. Home page; Url: '%s'\n",
+                        driverFactory.getDriver().getCurrentUrl()
+                    )
+                );
+            }
+            FooterNavMenu customerServiceMenu =
+                startBasePage.getFooterMenus().skip(2).findFirst().get();
+            NavMenuLink faqMenuLink = customerServiceMenu.getLinks()
+                .skip(customerServiceMenu.getLinks().count() - 1)
+                .findFirst().get();
+            faqMenuLink.safeClickThenWaitForDocument(Global.properties.getImplicitlyWaitSeconds());
+            SideBarBasePage sideBarPage = new SideBarBasePage(driver);
+            if(!sideBarPage.checkNoError()) {
+                errorStringsWrapper.value.add(
+                    String.format(
+                        "Error. Faq page; Url: '%s'\n",
+                        driverFactory.getDriver().getCurrentUrl()
+                    )
+                );
+            }
+            try {
+                sideBarPage.getSidebar().findElements(By.cssSelector("*"));
+            } catch (Exception ignored) {
+                errorStringsWrapper.value.add(
+                    String.format(
+                        "Error: sidebar not found. Faq page; Url: '%s'\n",
+                        driverFactory.getDriver().getCurrentUrl()
+                    )
+                );
+            }
+
+            FooterNavMenu aboutMenu =
+                sideBarPage.getFooterMenus().skip(3).findFirst().get();
+            List<NavMenuLink> aboutMenuLinks = aboutMenu.getLinks().collect(Collectors.toList());
+            List<Integer> skipList =
+                StringsFileReader.getSkipList("src/test/resources/sidebar-pages-skip-list.txt");
+            for (int i = 0; i < aboutMenuLinks.size(); i++) {
+                if (!skipList.contains(i + 1)) {
+                    sideBarPage.clickCloseModalButton();
+                    aboutMenuLinks.get(i).safeClickThenWaitForDocument(Global.properties.getImplicitlyWaitSeconds());
+                    sideBarPage = new SideBarBasePage(driver);
+                    if(!sideBarPage.checkNoError()) {
+                        errorStringsWrapper.value.add(
+                            String.format(
+                                "Error. Faq page; Url: '%s'\n",
+                                driverFactory.getDriver().getCurrentUrl()
+                            )
+                        );
+                    }
+                    try {
+                        sideBarPage.getSidebar().findElements(By.cssSelector("*"));
+                    } catch (Exception ignored) {
+                        errorStringsWrapper.value.add(
+                            String.format(
+                                "Error: sidebar not found. Some sidebar page; Url: '%s'\n",
+                                driverFactory.getDriver().getCurrentUrl()
+                            )
+                        );
+                    }
+                    aboutMenu =
+                        sideBarPage.getFooterMenus().skip(3).findFirst().get();
+                    aboutMenuLinks = aboutMenu.getLinks().collect(Collectors.toList());
+                }
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+            this.close();
+        }
+        return this;
+    } */
+
+    public Facade navigateThroughAllTheSidebarPagesAndCheckNoErrors(ValueWrapper<List<String>> errorStringsWrapper, Integer footerGroupNumber) {
+        try {
+            WebDriver driver = driverFactory.getDriver();
+            BasePage page = new BasePage(driver);
+            if(!page.checkNoError()){
+                errorStringsWrapper.value.add(
+                    String.format(
+                        "Error. Home page; Url: '%s'\n",
+                        driverFactory.getDriver().getCurrentUrl()
+                    )
+                );
+            }
+            FooterNavMenu footerGroupMenu =
+                page.getFooterMenus().skip(footerGroupNumber - 1).findFirst().get();
+            List<NavMenuLink> footerGroupMenuLinks = footerGroupMenu.getLinks().collect(Collectors.toList());
+            List<Integer> skipList =
+                StringsFileReader.getSkipList(
+                    String.format("src/test/resources/sidebar-pages-skip-list-%s.txt",
+                    footerGroupNumber)
+                );
+            for (int i = 0; i < footerGroupMenuLinks.size(); i++) {
+                if (!skipList.contains(i + 1)) {
+                    page.clickCloseModalButton();
+                    footerGroupMenuLinks.get(i).safeClickThenWaitForDocument(Global.properties.getImplicitlyWaitSeconds());
+                    page = new SideBarBasePage(driver);
+                    if(!page.checkNoError()) {
+                        errorStringsWrapper.value.add(
+                            String.format(
+                                "Error. Some sidebar page; Url: '%s'\n",
+                                driverFactory.getDriver().getCurrentUrl()
+                            )
+                        );
+                    }
+                    try {
+                        ((SideBarBasePage)page).getSidebar().findElements(By.cssSelector("*"));
+                    } catch (Exception ignored) {
+                        errorStringsWrapper.value.add(
+                            String.format(
+                                "Error: sidebar not found. Some sidebar page; Url: '%s'\n",
+                                driverFactory.getDriver().getCurrentUrl()
+                            )
+                        );
+                    }
+                    footerGroupMenu =
+                        page.getFooterMenus().skip(3).findFirst().get();
+                    footerGroupMenuLinks = footerGroupMenu.getLinks().collect(Collectors.toList());
+                }
+            }
+        } catch (Exception ex) {
+            System.out.println("Exception message: " + ex.getMessage());
+            ex.printStackTrace();
+            this.close();
+        }
         return this;
     }
 }

@@ -6,10 +6,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.tyaa.java.tests.selenium.calvinklein.decorator.CustomWebElementFieldDecorator;
-import org.tyaa.java.tests.selenium.calvinklein.decorator.customwebelements.BaseElement;
-import org.tyaa.java.tests.selenium.calvinklein.decorator.customwebelements.Button;
-import org.tyaa.java.tests.selenium.calvinklein.decorator.customwebelements.NavMenu;
-import org.tyaa.java.tests.selenium.calvinklein.decorator.customwebelements.NavMenuLink;
+import org.tyaa.java.tests.selenium.calvinklein.decorator.customwebelements.*;
 import org.tyaa.java.tests.selenium.calvinklein.utils.Global;
 
 import java.lang.reflect.InvocationTargetException;
@@ -29,6 +26,9 @@ public class BasePage {
 
     @FindBy(className = "mega-menu__first-level")
     private NavMenu navMenu;
+
+    @FindBy(className = "footer__list-group")
+    private List<WebElement> footerNavMenus;
 
     private final By BODY_LOCATOR = By.cssSelector("body");
     private final By H1_LOCATOR = By.cssSelector("h1");
@@ -94,6 +94,10 @@ public class BasePage {
 
     public Stream<NavMenuLink> getNavMenuLinks() {
         return navMenu.getLinks();
+    }
+
+    public Stream<FooterNavMenu> getFooterMenus() {
+        return footerNavMenus.stream().map(element -> new FooterNavMenu(driver, element));
     }
 
     public boolean checkNoError() {
